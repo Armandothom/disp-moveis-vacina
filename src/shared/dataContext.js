@@ -1,5 +1,3 @@
-import React, { createContext } from 'react';
-
 export const SexoEnum = {
     Masculino : "M",
     Feminino : "F"
@@ -69,6 +67,6 @@ export class DataContext {
     }
 }
 
-const dataContext = createContext(new DataContext());
-
-export default dataContext;
+export default class ContextManager {
+    static instance = ContextManager.instance || new DataContext()
+}

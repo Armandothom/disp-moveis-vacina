@@ -1,9 +1,9 @@
-//importações
+
 import { View, StyleSheet, TextInput, Image, Text } from 'react-native'
 import { Button } from 'react-native-paper'
 import { useState, useContext } from 'react'
 
-//definição do componente
+
 const EsqueciSenha = ({ navigation }) => {
 
   function sendForgotPassword() {

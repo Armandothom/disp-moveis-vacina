@@ -3,13 +3,13 @@ import { View, StyleSheet, Image, TextInput, ImageBackground, Text} from 'react-
 import { Button } from 'react-native-paper'
 import LinearGradient from 'react-native-linear-gradient'
 import { useState, useContext } from 'react'
-import dataContext from '../../shared/dataContext'
+import ContextManager from '../../shared/dataContext'
 
 //definição do componente
 const Login = ({navigation}) => {
-  const context = useContext(dataContext)
+  const context = ContextManager.instance;
 
-  function sendLogin() {
+  function sendLogin() {  
     const user = context.login(email, password);
     if(!user) {
       setChangeShowError(true)
@@ -65,14 +65,16 @@ const Login = ({navigation}) => {
                 secureTextEntry={true}
               />
             </View>
+            <View style={estilos.wrapperErro}>
             { showError && <Text style={estilos.erroText}>E-mail e/ou senha inválidos.</Text> }
+            </View>
           </View>
 
           <View style={estilos.footer}>
-            <Button mode="elevated" onPress={() => sendLogin()} style={estilos.buttonEntrar}>
+            <Button mode="elevated" onPress={() => sendLogin()} style={estilos.buttonEntrar} disabled={!email && !password}>
               <Text style={estilos.buttonText}>Entrar</Text>
             </Button>
-            <Button onPress={() => console.log('Pressed')} style={estilos.buttonCriarConta}>
+            <Button onPress={() => navigation.push('CriarConta')} style={estilos.buttonCriarConta}>
               <Text style={estilos.buttonText}>Criar minha conta</Text>
             </Button>
             <Button mode="elevated" onPress={() => navigation.push('EsqueciSenha')} style={estilos.buttonEsqueciSenha}>
@@ -219,6 +221,9 @@ const estilos = StyleSheet.create({
     fontSize: 16,
     marginRight: 5,
     width: 50
+  },
+  wrapperErro : {
+    height: 30
   },
   erroText : {
     color: 'red',
