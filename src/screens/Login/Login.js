@@ -2,25 +2,29 @@
 import { View, StyleSheet, Image, TextInput, ImageBackground, Text} from 'react-native'
 import { Button } from 'react-native-paper'
 import LinearGradient from 'react-native-linear-gradient'
-import { useState, useContext } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import ContextManager from '../../shared/dataContext'
+import {AuthContext} from '../../../App'
 
 //definição do componente
 const Login = ({navigation}) => {
   const context = ContextManager.instance;
+  const refreshAuth = useContext(AuthContext)
 
   function sendLogin() {  
     const user = context.login(email, password);
+    refreshAuth(true)
     if(!user) {
       setChangeShowError(true)
     } else {
-      setChangeShowError(false)
+      setChangeShowError(false);
     }
   }
   
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showError, setChangeShowError] = useState(false)
+
 
   return (
     <View style={estilos.body}>
