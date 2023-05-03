@@ -9,4 +9,5 @@ export function parseAndValidate(dataString) {
     return date;
 }
 
+export function pad(s) { return (s < 10) ? '0' + s : s; }
 

@@ -32,7 +32,7 @@ const CriarConta = ({ navigation }) => {
     context.createUser({
       sexo,
       dataNascimento : parseAndValidate(dataNascimento),
-      nomeCompleto,
+      nome,
       email,
       senha
     })
@@ -41,7 +41,7 @@ const CriarConta = ({ navigation }) => {
 
   const [sexo, setSexo] = useState(null)
   const [dataNascimento, setDataNascimento] = useState(null)
-  const [nomeCompleto, setNomeCompleto] = useState(null)
+  const [nome, setnome] = useState(null)
   const [email, setEmail] = useState(null)
   const [senha, setSenha] = useState(null)
   const [senhaRepetida, setSenhaRepetida] = useState(null)
@@ -64,8 +64,8 @@ const CriarConta = ({ navigation }) => {
           <Text style={estilos.inputText}>Nome completo</Text>
           <TextInput
             style={estilos.input}
-            value={nomeCompleto}
-            onChangeText={setNomeCompleto}
+            value={nome}
+            onChangeText={setnome}
           />
         </View>
         <View style={estilos.wrapperRadioInput}>
@@ -136,7 +136,7 @@ const CriarConta = ({ navigation }) => {
       </View>
       <View style={estilos.footer}>
         <Button mode="elevated" onPress={cadastrarConta} style={estilos.buttonRecuperar}
-        disabled={!email && !sexo && !dataNascimento && !nomeCompleto && !senha && !senhaRepetida}>
+        disabled={!email && !sexo && !dataNascimento && !nome && !senha && !senhaRepetida}>
           <Text style={estilos.buttonText}>Cadastrar</Text>
         </Button>
       </View>

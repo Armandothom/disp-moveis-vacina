@@ -1,10 +1,12 @@
 //importações
+import 'react-native-gesture-handler';
 import Login from './src/screens/Login/Login'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import EsqueciSenha from './src/screens/EsqueciSenha/EsqueciSenha';
 import CriarConta from './src/screens/CriarConta/CriarConta';
 import Home from './src/screens/Home/Home';
+import DrawerApp from './src/shared/DrawerApp'
 import ContextManager from './src/shared/dataContext'
 import { useEffect, useState, createContext } from 'react'
 
@@ -51,9 +53,9 @@ const App = ({ navigation }) => {
             ) : (
               <>
                 <Stack.Screen
-                  name="Home"
-                  component={Home}
-                  options={{ title: "Home" }} />
+                  name="DrawerApp"
+                  component={DrawerApp}
+                  options={{ title: "DrawerApp" }} />
               </>
             )
           }

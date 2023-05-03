@@ -10,13 +10,12 @@ import {AuthContext} from '../../../App'
 const Login = ({navigation}) => {
   const context = ContextManager.instance;
   const refreshAuth = useContext(AuthContext)
-
   function sendLogin() {  
     const user = context.login(email, password);
-    refreshAuth(true)
     if(!user) {
       setChangeShowError(true)
     } else {
+      refreshAuth(true)
       setChangeShowError(false);
     }
   }
