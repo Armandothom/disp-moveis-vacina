@@ -8,31 +8,63 @@ import { Avatar, Button, Card } from 'react-native-paper';
 const ProximasVacinas = ({ navigation }) => {
   const context = ContextManager.instance;
   const refreshAuth = useContext(AuthContext)
-
+  const vacinas = context.loggedUser ? context.loggedUser.vacinas.filter((vacina) => {
+    const now = new Date();
+    if(vacina.proximaVacinacao.getTime() > now.getTime()) {
+      return true;
+    } else {
+      return false;
+    }
+  }) : []
   return (
     <View style={estilos.body}>
       <FlatList style={estilos.cardWrapper}
-        data={DATA}
-        renderItem={({item}) => 
-        <Card>
-        <Card.Title title="Card Title" subtitle="Card Subtitle" />
-        <Card.Content>
-          <Text variant="titleLarge">Card title</Text>
-          <Text variant="bodyMedium">Card content</Text>
-        </Card.Content>
-      </Card>}
+        data={vacinas}
+        renderItem={({ item }) =>
+          <Card style={estilos.card}>
+            <View style={estilos.cardContent}>
+            <Text style={estilos.nomeVacina}>{item.nomeVacina}</Text>
+            <Text style={estilos.dataVacina}>{item.dataProximaFormatada}</Text>
+            </View>
+          </Card>
+        }
         keyExtractor={item => item.id}>
       </FlatList>
+      <View style={estilos.footer}>
+            <Button mode="elevated" onPress={() => console.log("redirect")} style={estilos.buttonNovaVacina}>
+              <Text style={estilos.buttonText}>Nova Vacina</Text>
+            </Button>
+          </View>
     </View>
   )
 }
 
 const estilos = StyleSheet.create({
-  cardWrapper : {
-    width: "90%",
-    height: "80%",
+  cardContent : {
+    padding: 10
+  },
+  nomeVacina: {
+    fontSize: 28,
+    color: "#3F92C5",
+    fontFamily: 'AveriaLibre-Regular'
+  },
+  dataVacina: {
+    fontSize: 18,
+    color: "#8B8B8B",
+    fontFamily: 'AveriaLibre-Regular'
+  },
+  card : {
+    marginTop: 20,
+    marginBottom: 20,
+    height: 80
+  },
+  cardWrapper: {
+    width: "100%",
+    height: "95%",
     display: "flex",
-    alignContent: "center"
+    alignContent: "center",
+    paddingHorizontal: 20,
+    marginTop: 25
   },
   headerTitleWrapper: {
     display: 'flex',
@@ -63,6 +95,16 @@ const estilos = StyleSheet.create({
     fontSize: 16,
     alignSelf: 'center',
     fontFamily: 'AveriaLibre-Regular'
+  },
+  buttonNovaVacina: {
+    backgroundColor: '#49B976',
+    width: 180,
+    marginTop: 10,
+    borderColor: '#37BD6D',
+    borderStyle : 'solid',
+    borderWidth: 1,
+    alignSelf: 'center',
+    borderRadius: 0,
   },
   buttonRecuperar: {
     backgroundColor: '#49B976',
@@ -100,7 +142,7 @@ const estilos = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: '40%',
+    height: '20%',
   },
   main: {
     justifyContent: 'center',

@@ -1,28 +1,53 @@
+import {pad} from './helper'
+
 export const SexoEnum = {
-    Masculino : "M",
-    Feminino : "F"
+    Masculino: "M",
+    Feminino: "F"
 }
 
 export const DoseEnum = {
-    PrimeiraDose : 1,
-    SegundaDose : 2,
-    TerceiraDose : 3,
-    DoseUnica : 4,
+    PrimeiraDose: 1,
+    SegundaDose: 2,
+    TerceiraDose: 3,
+    DoseUnica: 4,
 }
 
 export class Vacina {
+    id = null
+    dataVacinacao = new Date()
+    nomeVacina = ""
+    dose = DoseEnum.DoseUnica
+    comprovante = ""
+    proximaVacinacao = new Date()
     constructor(dto) {
         this.dataVacinacao = dto.dataVacinacao;
         this.nomeVacina = dto.nomeVacina;
         this.dose = dto.dose;
         this.comprovante = dto.comprovante;
         this.proximaVacinacao = dto.proximaVacinacao;
+        this.id = dto.id;
     }
-    dataVacinacao = new Date()
-    nomeVacina = ""
-    dose = DoseEnum.DoseUnica
-    comprovante = ""
-    proximaVacinacao = new Date()
+
+    get dataVacinacaoFormatada() {
+        return `${pad(this.dataVacinacao.getDate())}/${pad(this.dataVacinacao.getMonth() + 1)}/${this.dataVacinacao.getFullYear()}`
+    }
+
+    get dataProximaFormatada() {
+        return `${pad(this.proximaVacinacao.getDate())}/${pad(this.proximaVacinacao.getMonth() + 1)}/${this.proximaVacinacao.getFullYear()}`
+    }
+
+    get doseNome() {
+        switch (this.dose) {
+            case DoseEnum.DoseUnica:
+                return "Dose única"
+            case DoseEnum.PrimeiraDose:
+                return "Primeira dose"
+            case DoseEnum.SegundaDose:
+                return "Segunda dose"
+            case DoseEnum.TerceiraDose:
+                return "Terceira dose"
+        }
+    }
 }
 
 export class User {
@@ -40,7 +65,7 @@ export class User {
         this.dataNascimento = dto.dataNascimento;
         this.email = dto.email;
         this.senha = dto.senha;
-        this.vacinas = [];
+        this.vacinas = dto.vacinas ? dto.vacinas : [];
     }
 }
 
@@ -48,48 +73,56 @@ export class DataContext {
     constructor() {
         this.createUser(
             {
-                nome : "Armando Thomazini",
+                nome: "Armando Thomazini",
                 sexo: SexoEnum.Masculino,
-                dataNascimento : new Date(1999, 0, 14),
-                email : "armandothomazini@gmail.com",
-                senha : "teste123",
-                vacinas : [
-                    new Vacina({
-                        dataVacinacao : new Date(2023, 1, 2),
-                        nomeVacina : "Febre Amarela",
-                        dose : DoseEnum.DoseUnica,
-                        comprovante : "https://vencerocancer.org.br/wp-content/uploads/2018/01/ivoc-seringa-injecao-vacina-Esbenklinker-1000x563.jpg",
-                        proximaVacinacao : new Date(2023, 6, 2)
-                    }),
-                    new Vacina({
-                        dataVacinacao : new Date(2023, 2, 15),
-                        nomeVacina : "Poliomelite",
-                        dose : DoseEnum.SegundaDose,
-                        comprovante : "https://www.cnnbrasil.com.br/wp-content/uploads/sites/12/2022/02/vacina_astrazeneca_fiocruz-1-1.jpg?w=1200&h=1200&crop=1",
-                        proximaVacinacao : new Date(2024, 6, 2)
-                    }),
-                ]
+                dataNascimento: new Date(1999, 0, 14),
+                email: "armandothomazini@gmail.com",
+                senha: "teste123",
             }
         );
+        const now = new Date()
+        for (let i = 1; i < 10; i++) {
+            this.createVacina(new Vacina({
+                dataVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() + (i * Math.random() * 80)),
+                nomeVacina: `Vacina ${i}`,
+                dose: DoseEnum.DoseUnica,
+                comprovante: "",
+                proximaVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() + (i * Math.random() * 10))
+            }), 0)
+
+        }
     }
     #vacinaIdCounter = 0;
     #userIdCounter = 0;
 
     users = [];
-    loggedUserId = null;
-    createUser(dtoUser = new User()) {
-        dtoUser.id = this.generateUserId();
-        const newUser = new User(dtoUser)
+    loggedUserId = 0;
+
+    createUser(dto = new User()) {
+        dto.id = this.generateUserId();
+        const newUser = new User(dto)
         this.users.push(newUser);
     }
 
+    createVacina(dto = new Vacina(), userId) {
+        dto.id = this.generateVacinaId();
+        const vacina = new Vacina(dto)
+        const userIndex = this.users.findIndex(user => user.id == userId)
+        this.users[userIndex].vacinas.push(vacina)
+    }
+
+
     login(email, senha) {
         const foundUser = this.users.find((user) => user.email == email);
-        if(foundUser && foundUser.senha == senha) {
+        if (foundUser && foundUser.senha == senha) {
             this.loggedUserId = foundUser.id;
             return foundUser;
         }
         return false;
+    }
+
+    get loggedUser() {
+        return this.users.find((user) => user.id == this.loggedUserId)
     }
 
     generateUserId() {
