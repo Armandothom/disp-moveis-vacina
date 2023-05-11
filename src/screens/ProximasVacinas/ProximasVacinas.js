@@ -15,7 +15,7 @@ const ProximasVacinas = ({ navigation }) => {
     } else {
       return false;
     }
-  }) : []
+  }).sort((a, b) => a.proximaVacinacao.getTime() - b.proximaVacinacao.getTime()) : []
   return (
     <View style={estilos.body}>
       <FlatList style={estilos.cardWrapper}
