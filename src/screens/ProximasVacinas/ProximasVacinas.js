@@ -1,10 +1,9 @@
 
-import { View, StyleSheet, TextInput, Image, Text } from 'react-native'
-import { Button } from 'react-native-paper'
-import { useState, useContext, useEffect } from 'react'
+import { View, StyleSheet, TextInput, Image, Text, FlatList } from 'react-native'
+import { useContext } from 'react'
 import ContextManager from '../../shared/dataContext'
 import { AuthContext } from '../../../App'
-
+import { Avatar, Button, Card } from 'react-native-paper';
 
 const ProximasVacinas = ({ navigation }) => {
   const context = ContextManager.instance;
@@ -12,19 +11,36 @@ const ProximasVacinas = ({ navigation }) => {
 
   return (
     <View style={estilos.body}>
-      <Text>Proximas Vacinas</Text>
+      <FlatList style={estilos.cardWrapper}
+        data={DATA}
+        renderItem={({item}) => 
+        <Card>
+        <Card.Title title="Card Title" subtitle="Card Subtitle" />
+        <Card.Content>
+          <Text variant="titleLarge">Card title</Text>
+          <Text variant="bodyMedium">Card content</Text>
+        </Card.Content>
+      </Card>}
+        keyExtractor={item => item.id}>
+      </FlatList>
     </View>
   )
 }
 
 const estilos = StyleSheet.create({
+  cardWrapper : {
+    width: "90%",
+    height: "80%",
+    display: "flex",
+    alignContent: "center"
+  },
   headerTitleWrapper: {
     display: 'flex',
     flexDirection: "row",
     justifyContent: 'flex-start',
     alignContent: 'flex-end',
     padding: 10,
-    backgroundColor : '#C1E7E3'
+    backgroundColor: '#C1E7E3'
   },
   headerTitle: {
     fontSize: 32,

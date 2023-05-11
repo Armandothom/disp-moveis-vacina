@@ -26,6 +26,7 @@ export class Vacina {
 }
 
 export class User {
+    id = null
     nome = ""
     sexo = SexoEnum.Masculino
     dataNascimento = new Date()
@@ -33,6 +34,7 @@ export class User {
     senha = ""
     vacinas = []
     constructor(dto) {
+        this.id = dto.id;
         this.nome = dto.nome;
         this.sexo = dto.sexo;
         this.dataNascimento = dto.dataNascimento;
@@ -70,11 +72,13 @@ export class DataContext {
             }
         );
     }
+    #vacinaIdCounter = 0;
+    #userIdCounter = 0;
 
     users = [];
-    loggedUser = null;
-
+    loggedUserId = null;
     createUser(dtoUser = new User()) {
+        dtoUser.id = this.generateUserId();
         const newUser = new User(dtoUser)
         this.users.push(newUser);
     }
@@ -82,14 +86,26 @@ export class DataContext {
     login(email, senha) {
         const foundUser = this.users.find((user) => user.email == email);
         if(foundUser && foundUser.senha == senha) {
-            this.loggedUser = foundUser;
+            this.loggedUserId = foundUser.id;
             return foundUser;
         }
         return false;
     }
 
+    generateUserId() {
+        let id = this.#userIdCounter;
+        this.#userIdCounter += 1;
+        return id;
+    }
+
+    generateVacinaId() {
+        let id = this.#vacinaIdCounter;
+        this.#vacinaIdCounter += 1;
+        return id;
+    }
+
     logout() {
-        this.loggedUser = null;
+        this.loggedUserId = null;
     }
 }
 

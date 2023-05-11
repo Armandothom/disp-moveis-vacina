@@ -32,7 +32,7 @@ const App = ({ navigation }) => {
             headerShown: false
           }}>
           {
-            loggedIn == false ? (
+            loggedIn == true ? (
               <>
                 <Stack.Screen
                   name="Login"
