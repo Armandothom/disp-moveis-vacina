@@ -188,11 +188,10 @@ const EditarVacina = ({ navigation, route }) => {
       </View>
       <View style={estilos.footer}>
         <Button mode="elevated" onPress={editarVacina} style={estilos.buttonRecuperar}
-          disabled={!nomeVacina && !dose && !dataVacinacao && !nomeVacina && !comprovante}>
+          disabled={!nomeVacina || !dose || !dataVacinacao || !nomeVacina || !comprovante}>
           <Text style={estilos.buttonText}>Salvar alterações</Text>
         </Button>
-        <Button mode="elevated" onPress={() => setModalVisible(true)} style={estilos.buttonExcluir}
-          disabled={!nomeVacina && !dose && !dataVacinacao && !nomeVacina && !comprovante}>
+        <Button mode="elevated" onPress={() => setModalVisible(true)} style={estilos.buttonExcluir}>
           <Image
             style={estilos.imageExcluir}
             source={require("../../assets/trash_2.png")} />

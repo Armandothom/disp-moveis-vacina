@@ -89,7 +89,7 @@ export class DataContext {
     #userIdCounter = 0;
 
     users = [];
-    loggedUserId = 0;
+    loggedUserId = null;
 
     createUser(dto = new User()) {
         dto.id = this.generateUserId();

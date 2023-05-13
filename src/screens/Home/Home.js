@@ -27,7 +27,7 @@ const Home = ({ navigation }) => {
 
 
   function sortVacinas(filter = filterText) {
-    return context.loggedUser ? context.loggedUser.vacinas.sort((a, b) => a.dataVacinacao.getTime() - b.dataVacinacao.getTime()).filter((vacina) => {
+    return context.loggedUser ? context.loggedUser.vacinas.sort((a, b) => b.dataVacinacao.getTime() - a.dataVacinacao.getTime()).filter((vacina) => {
       const text = filter.toLowerCase();
       if(vacina.nomeVacina.toLowerCase().includes(text)) {
         return true;

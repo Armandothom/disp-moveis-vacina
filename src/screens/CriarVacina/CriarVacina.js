@@ -180,7 +180,7 @@ const CriarVacina = ({ navigation, route }) => {
       </View>
       <View style={estilos.footer}>
         <Button mode="elevated" onPress={cadastrarVacina} style={estilos.buttonRecuperar}
-          disabled={!nomeVacina && !dose && !dataVacinacao && !nomeVacina && !comprovante}>
+          disabled={!nomeVacina || !dose || !dataVacinacao || !nomeVacina || !comprovante}>
           <Text style={estilos.buttonText}>Cadastrar</Text>
         </Button>
       </View>
