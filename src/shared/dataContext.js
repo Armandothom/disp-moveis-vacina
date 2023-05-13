@@ -1,4 +1,4 @@
-import {pad} from './helper'
+import { pad } from './helper'
 
 export const SexoEnum = {
     Masculino: "M",
@@ -81,16 +81,15 @@ export class DataContext {
             }
         );
         const now = new Date()
-        for (let i = 1; i < 10; i++) {
-            this.createVacina(new Vacina({
-                dataVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() + (i * Math.random() * 80)),
-                nomeVacina: `Vacina ${i}`,
+        this.createVacina(new Vacina(
+            {
+                dataVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14),
+                nomeVacina: `Vacina automaticsadsadsadasda`,
                 dose: DoseEnum.DoseUnica,
                 comprovante: "",
-                proximaVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() + (i * Math.random() * 10))
-            }), 0)
-
-        }
+                proximaVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 15)
+            }
+        ), 0)
     }
     #vacinaIdCounter = 0;
     #userIdCounter = 0;

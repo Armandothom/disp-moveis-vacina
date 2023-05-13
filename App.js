@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import EsqueciSenha from './src/screens/EsqueciSenha/EsqueciSenha';
 import CriarConta from './src/screens/CriarConta/CriarConta';
-import Home from './src/screens/Home/Home';
+import CriarVacina from './src/screens/CriarVacina/CriarVacina';
 import DrawerApp from './src/shared/DrawerApp'
 import ContextManager from './src/shared/dataContext'
 import { useEffect, useState, createContext } from 'react'
@@ -56,6 +56,10 @@ const App = ({ navigation }) => {
                   name="DrawerApp"
                   component={DrawerApp}
                   options={{ title: "DrawerApp" }} />
+                  <Stack.Screen
+                    name="CriarVacina"
+                    component={CriarVacina}
+                    options={{ title: "CriarVacina" }} />
               </>
             )
           }

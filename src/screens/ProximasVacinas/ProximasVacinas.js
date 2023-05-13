@@ -1,21 +1,27 @@
 
-import { View, StyleSheet, TextInput, Image, Text, FlatList } from 'react-native'
-import { useContext } from 'react'
-import ContextManager from '../../shared/dataContext'
+import { View, StyleSheet, Text, FlatList } from 'react-native'
+import { useState, useCallback } from 'react'
+import ContextManager, { Vacina } from '../../shared/dataContext'
 import { AuthContext } from '../../../App'
 import { Avatar, Button, Card } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ProximasVacinas = ({ navigation }) => {
   const context = ContextManager.instance;
-  const refreshAuth = useContext(AuthContext)
-  const vacinas = context.loggedUser ? context.loggedUser.vacinas.filter((vacina) => {
-    const now = new Date();
-    if(vacina.proximaVacinacao.getTime() > now.getTime()) {
-      return true;
-    } else {
-      return false;
-    }
-  }).sort((a, b) => a.proximaVacinacao.getTime() - b.proximaVacinacao.getTime()) : []
+
+  useFocusEffect(useCallback(() => {
+    let sortedVacinas = context.loggedUser ? context.loggedUser.vacinas.filter((vacina) => {
+      const now = new Date();
+      if(vacina.proximaVacinacao.getTime() > now.getTime()) {
+        return true;
+      } else {
+        return false;
+      }
+    }).sort((a, b) => a.proximaVacinacao.getTime() - b.proximaVacinacao.getTime()) : []
+    setVacinas(sortedVacinas)
+  }, [vacinas]))
+  const [vacinas, setVacinas] = useState([])
+  
   return (
     <View style={estilos.body}>
       <FlatList style={estilos.cardWrapper}
@@ -23,15 +29,19 @@ const ProximasVacinas = ({ navigation }) => {
         renderItem={({ item }) =>
           <Card style={estilos.card}>
             <View style={estilos.cardContent}>
-            <Text style={estilos.nomeVacina}>{item.nomeVacina}</Text>
+            <Text numberOfLines={1} style={estilos.nomeVacina}>{item.nomeVacina}</Text>
             <Text style={estilos.dataVacina}>{item.dataProximaFormatada}</Text>
             </View>
           </Card>
         }
-        keyExtractor={item => item.id}>
+        keyExtractor={item => item.id}
+        extraData={this.state}>
       </FlatList>
       <View style={estilos.footer}>
-            <Button mode="elevated" onPress={() => console.log("redirect")} style={estilos.buttonNovaVacina}>
+            <Button mode="elevated" onPress={() => {
+              console.log(context.loggedUserId)
+              navigation.push('CriarVacina', {userId : context.loggedUserId})
+            }} style={estilos.buttonNovaVacina}>
               <Text style={estilos.buttonText}>Nova Vacina</Text>
             </Button>
           </View>
@@ -46,7 +56,7 @@ const estilos = StyleSheet.create({
   nomeVacina: {
     fontSize: 28,
     color: "#3F92C5",
-    fontFamily: 'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular',
   },
   dataVacina: {
     fontSize: 18,
