@@ -65,9 +65,6 @@ const App = ({ navigation }) => {
                   name="EditarVacina"
                   component={EditarVacina}
                   options={{ title: "EditarVacina" }} />
-
-
-
               </>
             )
           }

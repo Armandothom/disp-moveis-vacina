@@ -1,12 +1,12 @@
 
-import { View, StyleSheet, TextInput, Image, Text, Pressable, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, TextInput, Image, Text, Pressable, TouchableOpacity, Modal } from 'react-native'
 import { Button, RadioButton } from 'react-native-paper'
 import { useState } from 'react'
 import ContextManager, { DoseEnum } from '../../shared/dataContext';
 import { TextInputMask } from 'react-native-masked-text';
 import { parseAndValidate } from '../../shared/helper';
 import { Vacina } from '../../shared/dataContext';
-import {launchImageLibrary} from 'react-native-image-picker'
+import { launchImageLibrary } from 'react-native-image-picker'
 
 const EditarVacina = ({ navigation, route }) => {
   const context = ContextManager.instance;
@@ -43,13 +43,18 @@ const EditarVacina = ({ navigation, route }) => {
     }
   }
 
+  function excluirVacina() {
+    context.excluirVacina(userId, vacinaId)
+    navigation.pop();
+  }
+
   function editarVacina() {
     context.editarVacina(new Vacina({
-      dataVacinacao : parseAndValidate(dataVacinacao),
-      nomeVacina : nomeVacina,
-      dose : dose,
-      comprovante : comprovante,
-      proximaVacinacao : parseAndValidate(dataProximaVacinacao)
+      dataVacinacao: parseAndValidate(dataVacinacao),
+      nomeVacina: nomeVacina,
+      dose: dose,
+      comprovante: comprovante,
+      proximaVacinacao: parseAndValidate(dataProximaVacinacao)
 
     }), userId, vacinaId)
     navigation.pop();
@@ -62,6 +67,7 @@ const EditarVacina = ({ navigation, route }) => {
   const [nomeVacina, setNomeVacina] = useState(savedVacina.nomeVacina)
   const [showDataVacError, setDataVacError] = useState(false)
   const [showDataProxVacError, setDataProximaVacError] = useState(false)
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={estilos.body}>
@@ -114,28 +120,28 @@ const EditarVacina = ({ navigation, route }) => {
               <Text style={estilos.inputRadioButton}>1a. dose</Text>
             </View>
             <View style={estilos.wrapperRadioButton}>
-            <RadioButton
-              value={DoseEnum.SegundaDose}
-              status={dose === DoseEnum.SegundaDose ? 'checked' : 'unchecked'}
-              onPress={() => setDose(DoseEnum.SegundaDose)}
-            />
-            <Text style={estilos.inputRadioButton}>2a. dose</Text>
+              <RadioButton
+                value={DoseEnum.SegundaDose}
+                status={dose === DoseEnum.SegundaDose ? 'checked' : 'unchecked'}
+                onPress={() => setDose(DoseEnum.SegundaDose)}
+              />
+              <Text style={estilos.inputRadioButton}>2a. dose</Text>
             </View>
             <View style={estilos.wrapperRadioButton}>
-            <RadioButton
-              value={DoseEnum.TerceiraDose}
-              status={dose === DoseEnum.TerceiraDose ? 'checked' : 'unchecked'}
-              onPress={() => setDose(DoseEnum.TerceiraDose)}
-            />
-            <Text style={estilos.inputRadioButton}>3a. dose</Text>
+              <RadioButton
+                value={DoseEnum.TerceiraDose}
+                status={dose === DoseEnum.TerceiraDose ? 'checked' : 'unchecked'}
+                onPress={() => setDose(DoseEnum.TerceiraDose)}
+              />
+              <Text style={estilos.inputRadioButton}>3a. dose</Text>
             </View>
             <View style={estilos.wrapperRadioButton}>
-            <RadioButton
-              value={DoseEnum.DoseUnica}
-              status={dose === DoseEnum.DoseUnica ? 'checked' : 'unchecked'}
-              onPress={() => setDose(DoseEnum.DoseUnica)}
-            />
-            <Text style={estilos.inputRadioButton}>Dose única</Text>
+              <RadioButton
+                value={DoseEnum.DoseUnica}
+                status={dose === DoseEnum.DoseUnica ? 'checked' : 'unchecked'}
+                onPress={() => setDose(DoseEnum.DoseUnica)}
+              />
+              <Text style={estilos.inputRadioButton}>Dose única</Text>
             </View>
           </View>
         </View>
@@ -145,10 +151,10 @@ const EditarVacina = ({ navigation, route }) => {
             try {
               const img = await launchImageLibrary({
                 selectionLimit: 1,
-                includeBase64 : true,
-                saveToPhotos : true
+                includeBase64: true,
+                saveToPhotos: true
               })
-              if(img?.assets && img.assets.length > 0) {
+              if (img?.assets && img.assets.length > 0) {
                 const uri = img.assets[0].uri;
                 setComprovante(uri);
               }
@@ -156,10 +162,10 @@ const EditarVacina = ({ navigation, route }) => {
               console.error(error)
             }
           }} style={estilos.buttonImage}>
-          <Text style={estilos.buttonTextImage}>Selecionar imagem...</Text>
-        </TouchableOpacity>
+            <Text style={estilos.buttonTextImage}>Selecionar imagem...</Text>
+          </TouchableOpacity>
         </View>
-        {comprovante && <Image source={{uri : comprovante}} style={estilos.imageUri}></Image>}
+        {comprovante && <Image source={{ uri: comprovante }} style={estilos.imageUri}></Image>}
         <View style={estilos.wrapperInput}>
           <Text style={estilos.inputText}>Próxima vacinação</Text>
           <TextInputMask
@@ -170,7 +176,7 @@ const EditarVacina = ({ navigation, route }) => {
             onBlur={validateVacinacaoProximaDate}
             options={{
               mask: '99/99/9999'
-            }} 
+            }}
           />
           <Image
             style={estilos.imageDatepicker}
@@ -185,12 +191,90 @@ const EditarVacina = ({ navigation, route }) => {
           disabled={!nomeVacina && !dose && !dataVacinacao && !nomeVacina && !comprovante}>
           <Text style={estilos.buttonText}>Salvar alterações</Text>
         </Button>
+        <Button mode="elevated" onPress={() => setModalVisible(true)} style={estilos.buttonExcluir}
+          disabled={!nomeVacina && !dose && !dataVacinacao && !nomeVacina && !comprovante}>
+          <Image
+            style={estilos.imageExcluir}
+            source={require("../../assets/trash_2.png")} />
+          <Text style={estilos.buttonText}>Excluir</Text>
+        </Button>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={estilos.modal}>
+          <View style={estilos.modalInner}>
+            <Text style={estilos.modalText}>Tem certeza que deseja remover essa vacina?</Text>
+            <View style={estilos.wrapperModalAction}>
+              <Button mode="elevated" onPress={excluirVacina} style={estilos.buttonExcluir}
+                disabled={!nomeVacina && !dose && !dataVacinacao && !nomeVacina && !comprovante}>
+                <Text style={estilos.buttonText}>SIM</Text>
+              </Button>
+              <Button mode="elevated" onPress={() => setModalVisible(false)} style={estilos.buttonCancelarModal}
+                disabled={!nomeVacina && !dose && !dataVacinacao && !nomeVacina && !comprovante}>
+                <Text style={estilos.buttonText}>CANCELAR</Text>
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   )
 }
 
 const estilos = StyleSheet.create({
+  modal: {
+    display: 'flex',
+    flexDirection: 'row',
+    height: '100%',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center'
+  },
+  modalInner: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    width: 300
+  },
+  modalText: {
+    color: '#FD7979',
+    fontSize: 16,
+    alignSelf: 'center',
+    fontFamily: 'AveriaLibre-Regular',
+    textAlign: 'center'
+  },
+  imageExcluir: {
+    height: 20,
+    width: 20,
+  },
+  buttonCancelarModal: {
+    backgroundColor: '#3F92C5',
+    width: 160,
+    height: 40,
+    marginTop: 10,
+    borderWidth: 1,
+    padding: 0,
+    alignSelf: 'center',
+    borderRadius: 0,
+  },
+  buttonExcluir: {
+    backgroundColor: '#FF8383',
+    width: 130,
+    height: 40,
+    marginTop: 10,
+    borderWidth: 1,
+    padding: 0,
+    alignSelf: 'center',
+    borderRadius: 0,
+  },
+  wrapperModalAction: {
+
+  },
   headerTitleWrapper: {
     display: 'flex',
     flexDirection: "row",
@@ -256,7 +340,7 @@ const estilos = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'AveriaLibre-Regular',
   },
-  buttonImage : {
+  buttonImage: {
     backgroundColor: '#419ED7',
     width: 200,
     marginRight: 50,
@@ -304,7 +388,7 @@ const estilos = StyleSheet.create({
   },
   footer: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     height: '40%',
@@ -333,7 +417,7 @@ const estilos = StyleSheet.create({
     width: 100,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent : 'center',
+    justifyContent: 'center',
   },
   wrapperRadioGroup: {
     height: 80,

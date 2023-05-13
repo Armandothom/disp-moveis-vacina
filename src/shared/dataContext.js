@@ -128,7 +128,7 @@ export class DataContext {
     excluirVacina(userId, vacinaId) {
         const userIndex = this.users.findIndex(user => user.id == userId);
         const vacinaIndex = this.users[userIndex].vacinas.findIndex(vacina => vacina.id == vacinaId)
-        this.users[userIndex].vacinas[vacinaIndex].splice(vacinaIndex, 1);
+        this.users[userIndex].vacinas.splice(vacinaIndex, 1);
     }
 
 
