@@ -84,61 +84,6 @@ export class DataContext {
                 senha: "teste123",
             }
         );
-        const now = new Date()
-        this.createVacina(new Vacina(
-            {
-                dataVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14),
-                nomeVacina: `BCG`,
-                dose: DoseEnum.DoseUnica,
-                comprovante: "file:///data/user/0/com.vacinadispmoveis/cache/rn_image_picker_lib_temp_3d0684a1-d18b-431c-8ae7-9df4226b68a6.jpg",
-                proximaVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 15)
-            }
-        ), 0)
-        this.createVacina(new Vacina(
-            {
-                dataVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 14),
-                nomeVacina: `Febre amarela`,
-                dose: DoseEnum.PrimeiraDose,
-                comprovante: "file:///data/user/0/com.vacinadispmoveis/cache/rn_image_picker_lib_temp_3d0684a1-d18b-431c-8ae7-9df4226b68a6.jpg",
-                proximaVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 15)
-            }
-        ), 0)
-        this.createVacina(new Vacina(
-            {
-                dataVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 14),
-                nomeVacina: `Febre tifóide`,
-                dose: DoseEnum.SegundaDose,
-                comprovante: "file:///data/user/0/com.vacinadispmoveis/cache/rn_image_picker_lib_temp_3d0684a1-d18b-431c-8ae7-9df4226b68a6.jpg",
-                proximaVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 15)
-            }
-        ), 0)
-        this.createVacina(new Vacina(
-            {
-                dataVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 14),
-                nomeVacina: `CoronaVirus`,
-                dose: DoseEnum.TerceiraDose,
-                comprovante: "file:///data/user/0/com.vacinadispmoveis/cache/rn_image_picker_lib_temp_3d0684a1-d18b-431c-8ae7-9df4226b68a6.jpg",
-                proximaVacinacao: null
-            }
-        ), 0)
-        this.createVacina(new Vacina(
-            {
-                dataVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 14),
-                nomeVacina: `Mandraga branca`,
-                dose: DoseEnum.SegundaDose,
-                comprovante: "file:///data/user/0/com.vacinadispmoveis/cache/rn_image_picker_lib_temp_3d0684a1-d18b-431c-8ae7-9df4226b68a6.jpg",
-                proximaVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 15)
-            }
-        ), 0)
-        this.createVacina(new Vacina(
-            {
-                dataVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 14),
-                nomeVacina: `PVC`,
-                dose: DoseEnum.TerceiraDose,
-                comprovante: "file:///data/user/0/com.vacinadispmoveis/cache/rn_image_picker_lib_temp_3d0684a1-d18b-431c-8ae7-9df4226b68a6.jpg",
-                proximaVacinacao: null
-            }
-        ), 0)
     }
     #vacinaIdCounter = 0;
     #userIdCounter = 0;

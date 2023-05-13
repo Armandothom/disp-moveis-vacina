@@ -1,6 +1,6 @@
 
-import { View, StyleSheet, Text, FlatList, Image, TouchableWithoutFeedback } from 'react-native'
-import { useState, useCallback } from 'react'
+import { View, StyleSheet, Text, FlatList, Image, TouchableWithoutFeedback, TextInput, Keyboard } from 'react-native'
+import { useState, useCallback, useEffect } from 'react'
 import ContextManager from '../../shared/dataContext'
 import { Button, Card } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
@@ -8,17 +8,48 @@ import { useFocusEffect } from '@react-navigation/native';
 const Home = ({ navigation }) => {
   const context = ContextManager.instance;
 
-  useFocusEffect(useCallback(() => {
-    let vacinas = context.loggedUser ? context.loggedUser.vacinas.sort((a, b) => a.dataVacinacao.getTime() - b.dataVacinacao.getTime()) : []
-    console.log(vacinas)
-    setVacinas([].concat(vacinas))
-  }, [vacinas]))
-  const [vacinas, setVacinas] = useState([])
+  useEffect(() => {
 
+  }, [vacinas, filterText])
+
+  useFocusEffect(useCallback(() => {
+    setFilterText("")
+    setVacinas([].concat(sortVacinas("")))
+  }, [vacinas]))
+
+ function filterCards(text) {
+    setFilterText(text);
+    setVacinas([].concat(sortVacinas(text)))
+  }
+
+  const [vacinas, setVacinas] = useState([])
+  const [filterText, setFilterText] = useState("")
+
+
+  function sortVacinas(filter = filterText) {
+    return context.loggedUser ? context.loggedUser.vacinas.sort((a, b) => a.dataVacinacao.getTime() - b.dataVacinacao.getTime()).filter((vacina) => {
+      const text = filter.toLowerCase();
+      if(vacina.nomeVacina.toLowerCase().includes(text)) {
+        return true;
+      } else {
+        return false;
+      }
+    }) : []
+  }
   return (
     <View style={estilos.body}>
-      <View>
-
+      <View style={estilos.searchWrapper}>
+        <Image style={estilos.searchIcon} source={require("../../assets/search.png")}/>
+        <TextInput
+          placeholder="PESQUISAR VACINA..."
+          style={estilos.input}
+          value={filterText}
+          onChangeText={filterCards}
+          underlineColorAndroid="transparent"
+          onSubmitEditing={Keyboard.dismiss}
+          blurOnSubmit={true}
+          autoFocus={false}
+        />
       </View>
       <FlatList style={estilos.cardWrapper}
         data={vacinas}
@@ -27,43 +58,62 @@ const Home = ({ navigation }) => {
           justifyContent: 'space-evenly',
           width: '100%',
           alignContent: 'space-between'
-      }}
+        }}
         renderItem={({ item }) =>
-        <TouchableWithoutFeedback onPress={() => {
-          navigation.push('EditarVacina', {userId : context.loggedUserId, vacinaId : item.id})
-        }}>
-          <Card style={estilos.card}>
-            <View style={estilos.cardContent}>
-            <Text numberOfLines={1} style={estilos.nomeVacina}>{item.nomeVacina}</Text>
-            <View style={estilos.wrapperCentralizer}>
-            <Text numberOfLines={1} style={estilos.doseVacina}>{item.doseNome}</Text>
-            </View>
-            <Text style={estilos.dataVacinacaoFormatada}>{item.dataVacinacaoFormatada}</Text>
-            {item.comprovante && <Image source={{ uri: item.comprovante }} style={estilos.imageUri}></Image>}
-            <Text numberOfLines={1} style={estilos.proximaVacina}>{item.proximaVacinacao ? `Próxima dose em: ${item.dataProximaFormatada}` : `Não há próxima dose`}</Text>
-            </View>
-          </Card>
+          <TouchableWithoutFeedback 
+          onPress={() => {
+            navigation.push('EditarVacina', { userId: context.loggedUserId, vacinaId: item.id })
+          }}>
+            <Card style={estilos.card}>
+              <View style={estilos.cardContent}>
+                <Text numberOfLines={1} style={estilos.nomeVacina}>{item.nomeVacina}</Text>
+                <View style={estilos.wrapperCentralizer}>
+                  <Text numberOfLines={1} style={estilos.doseVacina}>{item.doseNome}</Text>
+                </View>
+                <Text style={estilos.dataVacinacaoFormatada}>{item.dataVacinacaoFormatada}</Text>
+                {item.comprovante && <Image source={{ uri: item.comprovante }} style={estilos.imageUri}></Image>}
+                <Text numberOfLines={1} style={estilos.proximaVacina}>{item.proximaVacinacao ? `Próxima dose em: ${item.dataProximaFormatada}` : `Não há próxima dose`}</Text>
+              </View>
+            </Card>
           </TouchableWithoutFeedback>
         }
         keyExtractor={item => item.id}
         extraData={this.state}>
       </FlatList>
       <View style={estilos.footer}>
-            <Button mode="elevated" onPress={() => {
-              navigation.push('CriarVacina', {userId : context.loggedUserId})
-            }} style={estilos.buttonNovaVacina}>
-              <Text style={estilos.buttonText}>Nova Vacina</Text>
-            </Button>
-          </View>
+        <Button mode="elevated" onPress={() => {
+          navigation.push('CriarVacina', { userId: context.loggedUserId })
+        }} style={estilos.buttonNovaVacina}>
+          <Text style={estilos.buttonText}>Nova Vacina</Text>
+        </Button>
+      </View>
     </View>
   )
 }
 
 const estilos = StyleSheet.create({
-  cardContent : {
+  searchWrapper: {
+    height: 30,
+    marginTop: 10,
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    fontFamily: 'AveriaLibre-Regular'
+  },
+  searchIcon : {
+    height: 15,
+    width: 15,
+    alignSelf: 'center',
+    position: 'absolute',
+    left: 25,
+    top: 15,
+    zIndex: 9999
+  }, 
+  cardContent: {
     padding: 10
   },
-  wrapperCentralizer : {
+  wrapperCentralizer: {
     width: 120,
     display: 'flex',
     backgroundColor: '#3F92C5',
@@ -76,7 +126,7 @@ const estilos = StyleSheet.create({
     fontFamily: 'AveriaLibre-Regular',
     textAlign: 'center',
   },
-  proximaVacina : {
+  proximaVacina: {
     fontSize: 12,
     color: "#FD7979",
     fontFamily: 'AveriaLibre-Regular',
@@ -87,7 +137,7 @@ const estilos = StyleSheet.create({
     height: 100,
     width: '100%',
   },
-  dataVacinacaoFormatada : {
+  dataVacinacaoFormatada: {
     fontSize: 14,
     color: "#8B8B8B",
     fontFamily: 'AveriaLibre-Regular',
@@ -106,7 +156,7 @@ const estilos = StyleSheet.create({
     color: "#8B8B8B",
     fontFamily: 'AveriaLibre-Regular'
   },
-  card : {
+  card: {
     marginTop: 20,
     marginBottom: 20,
     height: 210,
@@ -152,7 +202,7 @@ const estilos = StyleSheet.create({
     width: 180,
     marginTop: 10,
     borderColor: '#37BD6D',
-    borderStyle : 'solid',
+    borderStyle: 'solid',
     borderWidth: 1,
     alignSelf: 'center',
     borderRadius: 0,
@@ -214,7 +264,7 @@ const estilos = StyleSheet.create({
     borderWidth: 1,
     marginTop: 5,
     width: '90%',
-    paddingLeft: 10,
+    paddingLeft: 25,
     paddingRight: 10
   },
 })
