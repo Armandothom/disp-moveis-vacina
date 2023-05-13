@@ -84,7 +84,7 @@ export class DataContext {
         this.createVacina(new Vacina(
             {
                 dataVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14),
-                nomeVacina: `Vacina automaticsadsadsadasda`,
+                nomeVacina: `Vacina automatica`,
                 dose: DoseEnum.DoseUnica,
                 comprovante: "",
                 proximaVacinacao: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 15)
@@ -108,6 +108,27 @@ export class DataContext {
         const vacina = new Vacina(dto)
         const userIndex = this.users.findIndex(user => user.id == userId)
         this.users[userIndex].vacinas.push(vacina)
+    }
+
+    editarVacina(dto = new Vacina(), userId, vacinaId) {
+        const userIndex = this.users.findIndex(user => user.id == userId);
+        const vacinaIndex = this.users[userIndex].vacinas.findIndex(vacina => vacina.id == vacinaId)
+        const savedVacina = this.users[userIndex].vacinas[vacinaIndex];
+        dto.id = savedVacina.id;
+        const newVacina = Object.assign(savedVacina, dto)
+        this.users[userIndex].vacinas[vacinaIndex] = newVacina;
+    }
+
+    getVacinaById(userId, vacinaId) {
+        const userIndex = this.users.findIndex(user => user.id == userId);
+        const vacinaIndex = this.users[userIndex].vacinas.findIndex(vacina => vacina.id == vacinaId)
+        return this.users[userIndex].vacinas[vacinaIndex];
+    }
+
+    excluirVacina(userId, vacinaId) {
+        const userIndex = this.users.findIndex(user => user.id == userId);
+        const vacinaIndex = this.users[userIndex].vacinas.findIndex(vacina => vacina.id == vacinaId)
+        this.users[userIndex].vacinas[vacinaIndex].splice(vacinaIndex, 1);
     }
 
 

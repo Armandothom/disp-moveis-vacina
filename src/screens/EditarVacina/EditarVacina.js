@@ -8,9 +8,11 @@ import { parseAndValidate } from '../../shared/helper';
 import { Vacina } from '../../shared/dataContext';
 import {launchImageLibrary} from 'react-native-image-picker'
 
-const CriarVacina = ({ navigation, route }) => {
+const EditarVacina = ({ navigation, route }) => {
   const context = ContextManager.instance;
-  const userId = route.params.userId
+  const userId = route.params.userId;
+  const vacinaId = route.params.vacinaId;
+  let savedVacina = context.getVacinaById(userId, vacinaId);;
   function validateVacinacaoDate() {
     if (!dataVacinacao) {
       setDataVacError(true);
@@ -41,23 +43,23 @@ const CriarVacina = ({ navigation, route }) => {
     }
   }
 
-  function cadastrarVacina() {
-    context.createVacina(new Vacina({
+  function editarVacina() {
+    context.editarVacina(new Vacina({
       dataVacinacao : parseAndValidate(dataVacinacao),
       nomeVacina : nomeVacina,
       dose : dose,
       comprovante : comprovante,
       proximaVacinacao : parseAndValidate(dataProximaVacinacao)
 
-    }), userId)
+    }), userId, vacinaId)
     navigation.pop();
   }
 
-  const [dose, setDose] = useState(null)
-  const [dataVacinacao, setDataVacinacao] = useState(null)
-  const [comprovante, setComprovante] = useState(null)
-  const [dataProximaVacinacao, setDataProximaVacinacao] = useState(null)
-  const [nomeVacina, setNomeVacina] = useState(null)
+  const [dose, setDose] = useState(savedVacina.dose)
+  const [dataVacinacao, setDataVacinacao] = useState(savedVacina.dataVacinacaoFormatada)
+  const [comprovante, setComprovante] = useState(savedVacina.comprovante)
+  const [dataProximaVacinacao, setDataProximaVacinacao] = useState(savedVacina.dataProximaFormatada)
+  const [nomeVacina, setNomeVacina] = useState(savedVacina.nomeVacina)
   const [showDataVacError, setDataVacError] = useState(false)
   const [showDataProxVacError, setDataProximaVacError] = useState(false)
 
@@ -69,7 +71,7 @@ const CriarVacina = ({ navigation, route }) => {
             style={estilos.imageHeader}
             source={require("../../assets/vector-left.png")} />
         </Pressable>
-        <Text style={estilos.headerTitle}>Nova Vacina</Text>
+        <Text style={estilos.headerTitle}>Editar Vacina</Text>
       </View>
 
       <View style={estilos.form}>
@@ -179,9 +181,9 @@ const CriarVacina = ({ navigation, route }) => {
         </View>
       </View>
       <View style={estilos.footer}>
-        <Button mode="elevated" onPress={cadastrarVacina} style={estilos.buttonRecuperar}
+        <Button mode="elevated" onPress={editarVacina} style={estilos.buttonRecuperar}
           disabled={!nomeVacina && !dose && !dataVacinacao && !nomeVacina && !comprovante}>
-          <Text style={estilos.buttonText}>Cadastrar</Text>
+          <Text style={estilos.buttonText}>Salvar alterações</Text>
         </Button>
       </View>
     </View>
@@ -361,4 +363,4 @@ const estilos = StyleSheet.create({
   },
 })
 
-export default CriarVacina
+export default EditarVacina

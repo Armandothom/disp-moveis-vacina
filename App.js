@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import EsqueciSenha from './src/screens/EsqueciSenha/EsqueciSenha';
 import CriarConta from './src/screens/CriarConta/CriarConta';
 import CriarVacina from './src/screens/CriarVacina/CriarVacina';
+import EditarVacina from './src/screens/EditarVacina/EditarVacina';
 import DrawerApp from './src/shared/DrawerApp'
 import ContextManager from './src/shared/dataContext'
 import { useEffect, useState, createContext } from 'react'
@@ -23,9 +24,9 @@ const App = ({ navigation }) => {
 
   return (
     <AuthContext.Provider
-    value={
-      refreshAuth
-  }>
+      value={
+        refreshAuth
+      }>
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
@@ -56,10 +57,17 @@ const App = ({ navigation }) => {
                   name="DrawerApp"
                   component={DrawerApp}
                   options={{ title: "DrawerApp" }} />
-                  <Stack.Screen
-                    name="CriarVacina"
-                    component={CriarVacina}
-                    options={{ title: "CriarVacina" }} />
+                <Stack.Screen
+                  name="CriarVacina"
+                  component={CriarVacina}
+                  options={{ title: "CriarVacina" }} />
+                <Stack.Screen
+                  name="EditarVacina"
+                  component={EditarVacina}
+                  options={{ title: "EditarVacina" }} />
+
+
+
               </>
             )
           }
@@ -69,4 +77,4 @@ const App = ({ navigation }) => {
   )
 }
 
-export {App, AuthContext}
+export { App, AuthContext }

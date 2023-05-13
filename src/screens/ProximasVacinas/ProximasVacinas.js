@@ -21,13 +21,15 @@ const ProximasVacinas = ({ navigation }) => {
     setVacinas(sortedVacinas)
   }, [vacinas]))
   const [vacinas, setVacinas] = useState([])
-  
+
   return (
     <View style={estilos.body}>
       <FlatList style={estilos.cardWrapper}
         data={vacinas}
         renderItem={({ item }) =>
-          <Card style={estilos.card}>
+          <Card style={estilos.card} onPress={() => {
+            navigation.push('EditarVacina', {userId : context.loggedUserId, vacinaId : item.id})
+          }}>
             <View style={estilos.cardContent}>
             <Text numberOfLines={1} style={estilos.nomeVacina}>{item.nomeVacina}</Text>
             <Text style={estilos.dataVacina}>{item.dataProximaFormatada}</Text>
@@ -39,7 +41,6 @@ const ProximasVacinas = ({ navigation }) => {
       </FlatList>
       <View style={estilos.footer}>
             <Button mode="elevated" onPress={() => {
-              console.log(context.loggedUserId)
               navigation.push('CriarVacina', {userId : context.loggedUserId})
             }} style={estilos.buttonNovaVacina}>
               <Text style={estilos.buttonText}>Nova Vacina</Text>
