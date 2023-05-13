@@ -389,9 +389,9 @@ const estilos = StyleSheet.create({
   footer: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'center',
-    height: '40%',
+    height: '30%',
   },
   main: {
     justifyContent: 'center',
