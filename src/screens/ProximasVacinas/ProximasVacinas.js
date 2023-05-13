@@ -12,13 +12,13 @@ const ProximasVacinas = ({ navigation }) => {
   useFocusEffect(useCallback(() => {
     let sortedVacinas = context.loggedUser ? context.loggedUser.vacinas.filter((vacina) => {
       const now = new Date();
-      if(vacina.proximaVacinacao.getTime() > now.getTime()) {
+      if(vacina.proximaVacinacao && vacina.proximaVacinacao.getTime() > now.getTime()) {
         return true;
       } else {
         return false;
       }
     }).sort((a, b) => a.proximaVacinacao.getTime() - b.proximaVacinacao.getTime()) : []
-    setVacinas(sortedVacinas)
+    setVacinas([].concat(sortedVacinas))
   }, [vacinas]))
   const [vacinas, setVacinas] = useState([])
 
@@ -67,7 +67,7 @@ const estilos = StyleSheet.create({
   card : {
     marginTop: 20,
     marginBottom: 20,
-    height: 80
+    height: 50
   },
   cardWrapper: {
     width: "100%",

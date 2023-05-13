@@ -1,4 +1,5 @@
 export function parseAndValidate(dataString) {
+  if(!dataString) return null;
     const dia = dataString.substring(0, 2);
     const mes = dataString.substring(3, 5);
     const ano = dataString.substring(6);  
