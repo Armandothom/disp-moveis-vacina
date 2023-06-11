@@ -2,23 +2,32 @@
 import { View, StyleSheet, Text, FlatList } from 'react-native'
 import { useState, useCallback } from 'react'
 import ContextManager, { Vacina } from '../../shared/dataContext'
-import { AuthContext } from '../../../App'
-import { Avatar, Button, Card } from 'react-native-paper';
+import { Button, Card } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
+import { collection, onSnapshot, query } from 'firebase/firestore';
+import { db } from '../../firebase/config';
 
 const ProximasVacinas = ({ navigation }) => {
   const context = ContextManager.instance;
 
   useFocusEffect(useCallback(() => {
-    let sortedVacinas = context.loggedUser ? context.loggedUser.vacinas.filter((vacina) => {
-      const now = new Date();
-      if(vacina.proximaVacinacao && vacina.proximaVacinacao.getTime() > now.getTime()) {
-        return true;
-      } else {
-        return false;
-      }
-    }).sort((a, b) => a.proximaVacinacao.getTime() - b.proximaVacinacao.getTime()) : []
-    setVacinas([].concat(sortedVacinas))
+    const q = query(collection(db, context.getVacinaPath()))
+    onSnapshot(q, (snapshot) => {
+      let vacinas = []
+        snapshot.forEach((doc) => {
+          vacinas.push(new Vacina({
+            id : doc.id,
+            ...doc.data()})) 
+        })
+        setVacinas(vacinas.filter((vacina) => {
+          const now = new Date();
+          if(vacina.proximaVacinacao && vacina.proximaVacinacao > now.getTime()) {
+            return true;
+          } else {
+            return false;
+          }
+        }).sort((a, b) => b.proximaVacinacao - a.proximaVacinacao));
+    })
   }, [vacinas]))
   const [vacinas, setVacinas] = useState([])
 

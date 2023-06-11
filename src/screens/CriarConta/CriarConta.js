@@ -2,13 +2,14 @@
 import { View, StyleSheet, TextInput, Image, Text, Pressable } from 'react-native'
 import { Button, RadioButton } from 'react-native-paper'
 import { useState, useContext } from 'react'
-import ContextManager, { SexoEnum } from '../../shared/dataContext';
+import ContextManager, { SexoEnum, User } from '../../shared/dataContext';
 import { TextInputMask } from 'react-native-masked-text';
 import { parseAndValidate } from '../../shared/helper';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from '../../firebase/config';
+import { addDoc, collection } from 'firebase/firestore';
 
 const CriarConta = ({ navigation }) => {
-  const context = ContextManager.instance;
-
   function validateDate() {
     if(!dataNascimento) {
       setDataNascError(true);
@@ -29,14 +30,22 @@ const CriarConta = ({ navigation }) => {
       setSenhaNotEqualError(true);
       return false;
     }
-    context.createUser({
-      sexo,
-      dataNascimento : parseAndValidate(dataNascimento),
-      nome,
-      email,
-      senha
+    createUserWithEmailAndPassword(auth, email, senha).then((res) => {
+      const userColecao = collection(db, "usuarios")
+      let dto = new User({
+        sexo,
+        dataNascimento : parseAndValidate(dataNascimento),
+        nome,
+        email,
+        senha
+      })
+      addDoc(userColecao, JSON.parse(JSON.stringify(dto))).then((refDoc) => {
+        navigation.pop();
+      })
+    }).catch((err) => {
+      setShowErroGenerico(true)
+      console.log(err)
     })
-    navigation.pop();
   }
 
   const [sexo, setSexo] = useState(null)
@@ -47,6 +56,7 @@ const CriarConta = ({ navigation }) => {
   const [senhaRepetida, setSenhaRepetida] = useState(null)
   const [showDateNascError, setDataNascError] = useState(false)
   const [showSenhaNotEqualError, setSenhaNotEqualError] = useState(false)
+  const [showErroGenerico, setShowErroGenerico] = useState(false)
 
   return (
     <View style={estilos.body}>
@@ -132,6 +142,7 @@ const CriarConta = ({ navigation }) => {
         </View>
           <View style={estilos.wrapperErro}>
             {showSenhaNotEqualError && <Text style={estilos.erroText}>Campos de senha não correspondem.</Text>}
+            {showErroGenerico && <Text style={estilos.erroText}>Ocorreu um erro inesperado!</Text>}
           </View>
       </View>
       <View style={estilos.footer}>

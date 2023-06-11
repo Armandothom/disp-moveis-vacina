@@ -7,6 +7,8 @@ import { TextInputMask } from 'react-native-masked-text';
 import { parseAndValidate } from '../../shared/helper';
 import { Vacina } from '../../shared/dataContext';
 import {launchImageLibrary} from 'react-native-image-picker'
+import { db } from '../../firebase/config';
+import { addDoc, collection } from 'firebase/firestore';
 
 const CriarVacina = ({ navigation, route }) => {
   const context = ContextManager.instance;
@@ -42,15 +44,18 @@ const CriarVacina = ({ navigation, route }) => {
   }
 
   function cadastrarVacina() {
-    context.createVacina(new Vacina({
+    const vacColecao = collection(db, context.getVacinaPath())
+    const dto = new Vacina({
       dataVacinacao : parseAndValidate(dataVacinacao),
       nomeVacina : nomeVacina,
       dose : dose,
       comprovante : comprovante,
       proximaVacinacao : parseAndValidate(dataProximaVacinacao)
 
-    }), userId)
-    navigation.pop();
+    })
+    addDoc(vacColecao, JSON.parse(JSON.stringify(dto))).then((refDoc) => {
+      navigation.pop();
+    })
   }
 
   const [dose, setDose] = useState(null)

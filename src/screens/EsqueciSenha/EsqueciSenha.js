@@ -2,12 +2,18 @@
 import { View, StyleSheet, TextInput, Image, Text } from 'react-native'
 import { Button } from 'react-native-paper'
 import { useState, useContext } from 'react'
+import { sendPasswordResetEmail } from 'firebase/auth'
+import { auth } from '../../firebase/config'
 
 
 const EsqueciSenha = ({ navigation }) => {
 
   function sendForgotPassword() {
-    navigation.push("Login");
+    sendPasswordResetEmail(auth, email).then(() => {
+      navigation.pop();
+    }).catch((err) => {
+      console.log(err)
+    })
   }
 
   const [email, setEmail] = useState('')

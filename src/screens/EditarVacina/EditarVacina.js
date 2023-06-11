@@ -1,18 +1,39 @@
 
 import { View, StyleSheet, TextInput, Image, Text, Pressable, TouchableOpacity, Modal } from 'react-native'
 import { Button, RadioButton } from 'react-native-paper'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ContextManager, { DoseEnum } from '../../shared/dataContext';
 import { TextInputMask } from 'react-native-masked-text';
 import { parseAndValidate } from '../../shared/helper';
 import { Vacina } from '../../shared/dataContext';
 import { launchImageLibrary } from 'react-native-image-picker'
+import { updateDoc, collection, getDoc, doc, deleteDoc } from 'firebase/firestore';
+import { db } from '../../firebase/config';
 
 const EditarVacina = ({ navigation, route }) => {
   const context = ContextManager.instance;
-  const userId = route.params.userId;
   const vacinaId = route.params.vacinaId;
-  let savedVacina = context.getVacinaById(userId, vacinaId);;
+  let savedVacina = {};
+
+  useEffect(() => {
+    setVacina();
+  }, [])
+
+  async function setVacina() {
+    try {
+      const docRef = doc(db, context.getVacinaPath(), vacinaId);
+      savedVacina = (await getDoc(docRef)).data();
+      savedVacina = new Vacina(savedVacina);
+      setDose(savedVacina.dose);
+      setDataVacinacao(savedVacina.dataVacinacaoFormatada);
+      setComprovante(savedVacina.comprovante);
+      setDataProximaVacinacao(savedVacina.dataProximaFormatada);
+      setNomeVacina(savedVacina.nomeVacina);
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   function validateVacinacaoDate() {
     if (!dataVacinacao) {
       setDataVacError(true);
@@ -44,20 +65,25 @@ const EditarVacina = ({ navigation, route }) => {
   }
 
   function excluirVacina() {
-    context.excluirVacina(userId, vacinaId)
-    navigation.pop();
+    const docRef = doc(db, context.getVacinaPath(), vacinaId);
+    deleteDoc(docRef).then(() => {
+      navigation.pop();
+    })
   }
 
   function editarVacina() {
-    context.editarVacina(new Vacina({
+    const docRef = doc(db, context.getVacinaPath(), vacinaId);
+    const dto = new Vacina({
       dataVacinacao: parseAndValidate(dataVacinacao),
       nomeVacina: nomeVacina,
       dose: dose,
       comprovante: comprovante,
       proximaVacinacao: parseAndValidate(dataProximaVacinacao)
 
-    }), userId, vacinaId)
-    navigation.pop();
+    })
+    updateDoc(docRef, JSON.parse(JSON.stringify(dto))).then((refDoc) => {
+      navigation.pop();
+    })
   }
 
   const [dose, setDose] = useState(savedVacina.dose)

@@ -1,9 +1,11 @@
 
 import { View, StyleSheet, Text, FlatList, Image, TouchableWithoutFeedback, TextInput, Keyboard } from 'react-native'
 import { useState, useCallback, useEffect } from 'react'
-import ContextManager from '../../shared/dataContext'
+import ContextManager, { Vacina } from '../../shared/dataContext'
 import { Button, Card } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
+import { collection, onSnapshot, query } from 'firebase/firestore';
+import { db } from '../../firebase/config';
 
 const Home = ({ navigation }) => {
   const context = ContextManager.instance;
@@ -27,14 +29,24 @@ const Home = ({ navigation }) => {
 
 
   function sortVacinas(filter = filterText) {
-    return context.loggedUser ? context.loggedUser.vacinas.sort((a, b) => b.dataVacinacao.getTime() - a.dataVacinacao.getTime()).filter((vacina) => {
-      const text = filter.toLowerCase();
-      if(vacina.nomeVacina.toLowerCase().includes(text)) {
-        return true;
-      } else {
-        return false;
-      }
-    }) : []
+    const q = query(collection(db, context.getVacinaPath()))
+    onSnapshot(q, (snapshot) => {
+      let vacinas = []
+        snapshot.forEach((doc) => {
+          vacinas.push(new Vacina({
+            id : doc.id,
+            ...doc.data()})) 
+        })
+        setVacinas(vacinas.sort((a, b) => b.dataVacinacao - a.dataVacinacao).filter((vacina) => {
+          const text = filter.toLowerCase();
+          if(vacina.nomeVacina.toLowerCase().includes(text)) {
+            return true;
+          } else {
+            return false;
+          }
+        }));
+    })
+    return [];
   }
   return (
     <View style={estilos.body}>
@@ -77,7 +89,9 @@ const Home = ({ navigation }) => {
             </Card>
           </TouchableWithoutFeedback>
         }
-        keyExtractor={item => item.id}
+        keyExtractor={item => {
+          return item.id;
+        }}
         extraData={this.state}>
       </FlatList>
       <View style={estilos.footer}>

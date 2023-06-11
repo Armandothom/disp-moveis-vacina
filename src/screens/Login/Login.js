@@ -1,26 +1,34 @@
 //importações
-import { View, StyleSheet, Image, TextInput, ImageBackground, Text} from 'react-native'
-import { Button } from 'react-native-paper'
+import { View, StyleSheet, Image, TextInput, ImageBackground, Text } from 'react-native'
+import { ActivityIndicator, Button } from 'react-native-paper'
 import LinearGradient from 'react-native-linear-gradient'
 import { useState, useEffect, useContext } from 'react'
 import ContextManager from '../../shared/dataContext'
-import {AuthContext} from '../../../App'
+import { AuthContext } from '../../../App'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth, db } from '../../firebase/config'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 
-//definição do componente
-const Login = ({navigation}) => {
+const Login = ({ navigation }) => {
   const context = ContextManager.instance;
   const refreshAuth = useContext(AuthContext)
-  function sendLogin() {  
-    const user = context.login(email, password);
-    if(!user) {
-      setChangeShowError(true)
-    } else {
+  function sendLogin() {
+    setLoading(true)
+    signInWithEmailAndPassword(auth, email, password).then(async (res) => {
+      const userQuery = await getDocs(query(collection(db, "usuarios"), where("email", "==", res.user.email)));
+      const user = Object.assign(userQuery.docs[0].data(), {id : userQuery.docs[0].id})
+      context.setUserLoggedId(user)
       refreshAuth(true)
       setChangeShowError(false);
-    }
+    }).catch((err) => {
+      setChangeShowError(true)
+    }).finally(() => {
+      setLoading(false)
+    })
   }
-  
+
   const [email, setEmail] = useState('')
+  const [isLoading, setLoading] = useState(false)
   const [password, setPassword] = useState('')
   const [showError, setChangeShowError] = useState(false)
 
@@ -69,14 +77,19 @@ const Login = ({navigation}) => {
               />
             </View>
             <View style={estilos.wrapperErro}>
-            { showError && <Text style={estilos.erroText}>E-mail e/ou senha inválidos.</Text> }
+              {showError && <Text style={estilos.erroText}>E-mail e/ou senha inválidos.</Text>}
             </View>
           </View>
 
           <View style={estilos.footer}>
-            <Button mode="elevated" onPress={() => sendLogin()} style={estilos.buttonEntrar} disabled={!email && !password}>
-              <Text style={estilos.buttonText}>Entrar</Text>
-            </Button>
+            {
+              isLoading ?
+                <ActivityIndicator color="#000000" size={40}></ActivityIndicator>
+                :
+                <Button mode="elevated" onPress={() => sendLogin()} style={estilos.buttonEntrar} disabled={!email && !password}>
+                  <Text style={estilos.buttonText}>Entrar</Text>
+                </Button>
+            }
             <Button onPress={() => navigation.push('CriarConta')} style={estilos.buttonCriarConta}>
               <Text style={estilos.buttonText}>Criar minha conta</Text>
             </Button>
@@ -106,7 +119,7 @@ const estilos = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     height: 250,
-    justifyContent : 'space-evenly',
+    justifyContent: 'space-evenly',
     fontFamily: 'AveriaLibre-Regular'
   },
   headerBottomWrapper: {
@@ -168,7 +181,7 @@ const estilos = StyleSheet.create({
     width: 130,
     marginTop: 10,
     borderColor: '#37BD6D',
-    borderStyle : 'solid',
+    borderStyle: 'solid',
     borderWidth: 1,
     alignSelf: 'center',
     borderRadius: 0,
@@ -178,15 +191,15 @@ const estilos = StyleSheet.create({
     width: 250,
     marginTop: 10,
     borderColor: '#419ED7',
-    borderStyle : 'solid',
+    borderStyle: 'solid',
     borderWidth: 1,
     alignSelf: 'center',
     borderRadius: 0,
     shadowColor: '#52006A',
     shadowOpacity: 1,
     elevation: 30,
-    shadowRadius: 30 ,
-    shadowOffset : { width: 5, height: 13},
+    shadowRadius: 30,
+    shadowOffset: { width: 5, height: 13 },
   },
   buttonEsqueciSenha: {
     backgroundColor: '#B0CCDE',
@@ -209,28 +222,28 @@ const estilos = StyleSheet.create({
     fontFamily: 'AveriaLibre-Regular',
     alignSelf: 'center'
   },
-  wrapperInput :{
-    display : 'flex',
-    flexDirection : 'row',
-    alignItems : 'center',
-    width : '100%',
-    paddingLeft : 10,
-    paddingRight : 30,
+  wrapperInput: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    paddingLeft: 10,
+    paddingRight: 30,
     marginTop: 10
   },
-  inputText : {
+  inputText: {
     color: '#FFFFFF',
-    fontWeight : 'bold',
+    fontWeight: 'bold',
     fontSize: 16,
     marginRight: 5,
     width: 50
   },
-  wrapperErro : {
+  wrapperErro: {
     height: 30
   },
-  erroText : {
+  erroText: {
     color: 'red',
-    fontWeight : 'bold',
+    fontWeight: 'bold',
     fontSize: 16,
     marginTop: 5,
     width: 340,
@@ -245,7 +258,7 @@ const estilos = StyleSheet.create({
     height: 40,
     borderWidth: 1,
     marginTop: 5,
-    width : '90%',
+    width: '90%',
     paddingLeft: 10,
     paddingRight: 10
   },

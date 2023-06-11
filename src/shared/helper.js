@@ -7,7 +7,7 @@ export function parseAndValidate(dataString) {
     if(date.getDate() != dia || date.getMonth() != mes - 1 || date.getFullYear() != ano) {
         return null;
       }
-    return date;
+    return date.getTime();
 }
 
 export function pad(s) { return (s < 10) ? '0' + s : s; }
